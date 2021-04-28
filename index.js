@@ -17,7 +17,9 @@ app.use((err, req, res, next) => {
     message: err.message,
     status: "error",
     data: null
+	
   })
+  next(err.message)
 });
 app.use(express.json());
 app.use(cors());
@@ -68,7 +70,7 @@ app.post("/speakers", async(req, res, next)=>{
 	try {
 		const data = req.body
 	const {error} = SpeakerValidation(data, { abortEarly: true })
-	if(error) throw new ErrorHandler(5000, "Invalid data entered")
+	if(error) throw new ErrorHandler(500, "Invalid data entered")
 
 		const {fullname,profile,image} = data
 		const speaker = {fullname,profile,image,slug: slugify(fullname)}
@@ -83,6 +85,26 @@ app.post("/speakers", async(req, res, next)=>{
 		next(new ErrorHandler(error.status || 500, error.message))
 	}
 })
+
+
+app.get("/speaker/:slug", async(req, res, next)=>{
+	try {
+		const {slug} = req.params
+	
+	const speaker = await Speaker.findOne({slug:slug})
+	if(!speaker)throw new ErrorHandler(401, "Speaker not found")
+
+    res.status(200).json({
+      status: "sucessful",
+      message: "sucess",
+      data: speaker
+    })
+	} catch (error) {
+		next(new ErrorHandler(error.status || 500, error.message))
+	}
+})
+
+
 
 
 app.get("/speakers", async(req, res, next)=>{
