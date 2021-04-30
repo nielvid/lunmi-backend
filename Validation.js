@@ -5,8 +5,8 @@ const registerValidation = (data) => {
   const schema = Joi.object({
     firstname: Joi.string().required(),
     lastname: Joi.string().required(),
-    email: Joi.string().required().email(),
-    telephone: Joi.string().min(11).max(11).required()
+    email: Joi.string().required().email().trim(),
+    telephone: Joi.string().min(11).max(14).required()
   });
   return schema.validate(data);
 };
